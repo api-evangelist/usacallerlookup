@@ -1,0 +1,25 @@
+generated: '2026-09-14'
+method: searched
+source: openapi/usacallerlookup-openapi.json (info.description + 429 response), llms/usacallerlookup-llms.txt
+summary: >-
+  A single global limit of 60 requests per minute per client IP applies across every
+  endpoint. Exceeding it returns HTTP 429 with a Retry-After header. Responses also carry
+  Cache-Control headers; the provider directs bulk consumers to the downloadable dataset
+  rather than crawling the API.
+limit_count: 1
+rate_limits:
+  - scope: per-ip
+    window: 60s
+    limit: 60
+    burst: null
+    status_on_exhaustion: 429
+    response_headers:
+      - Retry-After
+      - RateLimit
+      - Cache-Control
+    error_body:
+      error: rate_limited
+      shape: '{ error, message, dataset }'
+    remediation: >-
+      Wait the number of seconds in Retry-After, cache responses (Cache-Control is sent),
+      or download the full CC0 dataset for bulk access.

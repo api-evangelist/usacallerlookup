@@ -1,0 +1,27 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json
+summary: >-
+  No hosted or local MCP server is published by the provider (searched the site, llms.txt,
+  npm, PyPI and the GitHub org — none found). The tools below are a CANDIDATE list derived
+  from the three OpenAPI operations, not a shipped server.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: derived
+tools:
+  - name: lookup_number
+    rest: lookupNumber
+    description: Look up one US phone number (carrier, location, FTC complaint history).
+    inputs: { phone: "10-digit NANP number" }
+  - name: get_area_code
+    rest: getAreaCode
+    description: Summarise one US area code (state, timezone, prefixes, complaint aggregates).
+    inputs: { npa: "3-digit area code" }
+  - name: get_stats
+    rest: getStats
+    description: Dataset headline figures (tracked numbers, complaint records, robocall flags).
+    inputs: {}

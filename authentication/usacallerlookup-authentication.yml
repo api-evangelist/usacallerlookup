@@ -1,0 +1,13 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json
+summary: >-
+  Public, unauthenticated API. The OpenAPI 3.1.0 contract declares no securitySchemes and
+  no security requirement on any operation. No API key, token, or sign-up is required; the
+  only access control is a 60-request-per-minute-per-IP rate limit.
+schemes: []
+public: true
+signup_required: false
+notes:
+  - All three operations (lookupNumber, getAreaCode, getStats) are anonymous HTTP GET.
+  - Abuse control is per-IP rate limiting, not credentials (see rate-limits/).

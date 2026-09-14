@@ -1,0 +1,10 @@
+generated: '2026-09-14'
+method: generated
+source: openapi/usacallerlookup-openapi.json + conventions/, errors/, rate-limits/
+skills:
+  - file: usacallerlookup-reverse-lookup.md
+    name: usacallerlookup-reverse-lookup
+    operations: [lookupNumber, getStats]
+  - file: usacallerlookup-area-code-intel.md
+    name: usacallerlookup-area-code-intel
+    operations: [getAreaCode, getStats]

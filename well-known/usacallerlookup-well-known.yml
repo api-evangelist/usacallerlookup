@@ -1,0 +1,35 @@
+generated: '2026-09-14'
+method: probed
+source: live probes 2026-09-14
+note: >-
+  No machine-readable /.well-known documents are served. Every path returns either a 404
+  HTML page (SPA/theme shell) or a WordPress trailing-slash 301 to an empty page. No
+  security.txt, no OpenID/OAuth metadata, no api-catalog, no agent card. Recorded absence;
+  no WellKnown or SecurityTxt pointer emitted.
+hosts:
+  - host: www.usacallerlookup.com
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 301
+        file: null
+      - path: /.well-known/oauth-protected-resource
+        status: 301
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null

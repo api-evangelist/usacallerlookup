@@ -1,0 +1,30 @@
+generated: '2026-09-14'
+method: searched
+source: registry.npmjs.org/usacallerlookup, pypi.org/pypi/usacallerlookup/json
+note: >-
+  Two first-party clients published from the provider's own GitHub org
+  (github.com/usacallerlookup/api-clients). Both are zero-dependency wrappers over the
+  free no-auth REST API and share version 1.0.0 released 2026-08-21.
+packages:
+  - name: usacallerlookup
+    ecosystem: npm
+    registry: npm
+    official: true
+    url: https://www.npmjs.com/package/usacallerlookup
+    repository: https://github.com/usacallerlookup/api-clients
+    version: 1.0.0
+    published: '2026-08-21'
+    description: >-
+      Zero-dependency JavaScript client for the free USA Caller Lookup API: reverse phone
+      lookup, FTC robocall complaint data, and US area code information.
+  - name: usacallerlookup
+    ecosystem: pypi
+    registry: pypi
+    official: true
+    url: https://pypi.org/project/usacallerlookup/
+    repository: https://github.com/usacallerlookup/api-clients
+    version: 1.0.0
+    published: '2026-08-21'
+    description: >-
+      Zero-dependency Python client for the free USA Caller Lookup API: reverse phone
+      lookup, FTC robocall complaint data, and US area code information.

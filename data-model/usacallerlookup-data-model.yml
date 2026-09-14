@@ -1,0 +1,47 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json (components.schemas $ref graph)
+summary: >-
+  Three top-level response entities (NumberProfile, AreaCodeSummary, Stats), each embedding
+  a shared Attribution block. NumberProfile composes Location and Complaints sub-objects.
+entities:
+  - name: NumberProfile
+    root: true
+    operation: lookupNumber
+    fields: [phone, digits, toll_free, location, complaints, community_reports, page, attribution]
+  - name: AreaCodeSummary
+    root: true
+    operation: getAreaCode
+    fields: [area_code, state, timezone, prefixes_assigned, top_cities, complaints, page, attribution]
+  - name: Stats
+    root: true
+    operation: getStats
+    fields: [tracked_numbers, complaint_records, robocall_flagged, last_updated, coverage, attribution]
+  - name: Location
+    embedded: true
+  - name: Complaints
+    embedded: true
+  - name: Attribution
+    embedded: true
+    note: Shared CC0 attribution block returned on every response.
+relationships:
+  - from: NumberProfile
+    to: Location
+    type: has_one
+    via: location
+  - from: NumberProfile
+    to: Complaints
+    type: has_one
+    via: complaints
+  - from: NumberProfile
+    to: Attribution
+    type: has_one
+    via: attribution
+  - from: AreaCodeSummary
+    to: Attribution
+    type: has_one
+    via: attribution
+  - from: Stats
+    to: Attribution
+    type: has_one
+    via: attribution

@@ -1,0 +1,29 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json (4xx/5xx responses)
+format: custom-json
+note: >-
+  Errors are plain JSON, NOT RFC 9457 problem+json. Two envelope shapes appear: a compact
+  { error, message } (400 / 429, plus a dataset link on 429) and the standard WordPress REST
+  route error { code, message, data:{status} } surfaced on 404 when the path does not match.
+error_types:
+  - status: 400
+    error: invalid_number
+    envelope: '{ error, message }'
+    meaning: The {phone} value is not a valid 10-digit NANP number.
+    operation: lookupNumber
+    remediation: Send exactly 10 digits (NANP), stripping +1, spaces and punctuation.
+  - status: 404
+    error: rest_no_route
+    envelope: '{ code, message, data:{ status } }'
+    meaning: >-
+      Input outside accepted characters/length so no route matched (standard WordPress REST
+      error), or no prefixes assigned under the requested area code.
+    operation: lookupNumber, getAreaCode
+    remediation: Check the path segment format against the OpenAPI contract.
+  - status: 429
+    error: rate_limited
+    envelope: '{ error, message, dataset }'
+    meaning: More than 60 requests in a minute from this IP.
+    operation: all
+    remediation: Honor Retry-After; cache responses; or download the bulk dataset.

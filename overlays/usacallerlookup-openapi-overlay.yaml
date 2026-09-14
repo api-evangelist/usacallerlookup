@@ -1,0 +1,28 @@
+overlay: 1.0.0
+info:
+  title: USACallerLookup enrichment overlay
+  version: 1.0.0
+x-provenance:
+  generated: '2026-09-14'
+  method: generated
+  source: openapi/usacallerlookup-openapi.json
+  note: >-
+    Non-destructive API Evangelist enhancements. Does not mutate the provider's original
+    contract; records catalog tags and the public/no-auth posture as overlay actions.
+extends: ../openapi/usacallerlookup-openapi.json
+actions:
+  - target: $.info
+    update:
+      x-apis-io-tags:
+        - phone lookup
+        - caller ID
+        - robocall
+        - FTC
+        - telecom
+        - open data
+        - anti-fraud
+      x-access: public-no-auth
+  - target: $.paths.*.get
+    update:
+      x-safe: true
+      x-idempotent: true

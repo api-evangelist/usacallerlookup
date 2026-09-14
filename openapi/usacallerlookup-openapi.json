@@ -1,0 +1,390 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "USACallerLookup Free Phone Lookup API",
+    "version": "1.0.0",
+    "summary": "Free, no-key JSON API for US phone numbers: carrier, location and FTC robocall complaint history.",
+    "description": "A free, read-only JSON API over US phone numbering data and FTC Do Not Call complaint records. No API key, no sign-up, no cost.\n\nData sources: the NANPA numbering registry (carrier, city and state per NPA-NXX prefix) and FTC Do Not Call complaint data (US public domain, refreshed every weekday), plus counts of moderated community reports filed on usacallerlookup.com. The data is dedicated to the public domain under CC0.\n\nRate limit: 60 requests per minute per IP. Above that the API answers HTTP 429 with a Retry-After header. Responses carry Cache-Control headers, so cache on your side. For bulk access download the full dataset (GitHub, Kaggle, Hugging Face, Zenodo) instead of crawling the API.\n\nA complaint record means someone reported receiving an unwanted call that displayed the number. It is not proof of wrongdoing, and caller ID spoofing means the displayed number may not be the one that placed the call. USACallerLookup is not a consumer reporting agency under the FCRA, and this API must not be used to determine eligibility for credit, employment, housing or any other FCRA-regulated purpose.",
+    "termsOfService": "https://www.usacallerlookup.com/terms-conditions/",
+    "contact": {
+      "name": "USACallerLookup",
+      "url": "https://www.usacallerlookup.com/api/",
+      "email": "contact@usacallerlookup.com"
+    },
+    "license": {
+      "name": "CC0 1.0 Universal (data)",
+      "identifier": "CC0-1.0"
+    }
+  },
+  "externalDocs": {
+    "description": "Human-readable API documentation, client libraries and dataset downloads",
+    "url": "https://www.usacallerlookup.com/api/"
+  },
+  "servers": [
+    {
+      "url": "https://www.usacallerlookup.com/wp-json/ucl/v1",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    { "name": "Numbers", "description": "Per-number carrier, location and complaint profile" },
+    { "name": "Area codes", "description": "Aggregate figures for one area code" },
+    { "name": "Dataset", "description": "Headline figures for the whole dataset" }
+  ],
+  "paths": {
+    "/number/{phone}": {
+      "get": {
+        "tags": ["Numbers"],
+        "operationId": "lookupNumber",
+        "summary": "Look up one US phone number",
+        "description": "Returns the number's assigned city, state and carrier, its FTC complaint profile (total complaints, robocall flags, first and last reported dates, number of reporting states, top complaint subjects) and counts of community reports. Dashes, dots, spaces, brackets and a leading 1 are accepted. A number with no complaint history still returns its carrier and location with complaint counts at zero. Toll-free numbers return toll_free true and location null, because toll-free codes carry no geography.",
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "path",
+            "required": true,
+            "description": "A 10-digit US (NANP) number in any common format, optionally with a leading 1. Between 7 and 20 characters from digits, spaces and + ( ) . -",
+            "schema": { "type": "string", "pattern": "^[0-9+().\\s-]{7,20}$" },
+            "examples": {
+              "geographic": { "value": "628-201-7751" },
+              "tollFree": { "value": "888-860-0052" },
+              "withCountryCode": { "value": "16282017751" }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Number profile",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/CacheControl" },
+              "Access-Control-Allow-Origin": { "$ref": "#/components/headers/CORS" }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/NumberProfile" },
+                "example": {
+                  "phone": "628-201-7751",
+                  "digits": "6282017751",
+                  "toll_free": false,
+                  "location": { "city": "San Francisco", "state": "CA", "carrier": "ONVOY, LLC - CA" },
+                  "complaints": {
+                    "total": 9,
+                    "robocalls": 4,
+                    "first_seen": "2026-07-14",
+                    "last_seen": "2026-08-19",
+                    "states_reporting": 4,
+                    "top_subjects": [
+                      { "subject": "Reducing your debt (credit cards, mortgage, student loans)", "complaints": 5 },
+                      { "subject": "Other", "complaints": 2 }
+                    ]
+                  },
+                  "community_reports": {},
+                  "page": "https://www.usacallerlookup.com/628-201-7751/",
+                  "attribution": {
+                    "source": "USACallerLookup.com",
+                    "url": "https://www.usacallerlookup.com/628-201-7751/",
+                    "docs": "https://www.usacallerlookup.com/api/",
+                    "data": "FTC Do Not Call complaint data (US public domain) + NANPA numbering registry",
+                    "license": "CC0-1.0",
+                    "dataset": "https://github.com/usacallerlookup/ftc-robocall-dataset"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Not a valid 10-digit NANP number",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "example": { "error": "invalid_number", "message": "Expected a 10-digit NANP number." }
+              }
+            }
+          },
+          "404": {
+            "description": "Input outside the accepted characters or length, so no route matched (standard WordPress REST error shape)",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RouteError" }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/area-code/{npa}": {
+      "get": {
+        "tags": ["Area codes"],
+        "operationId": "getAreaCode",
+        "summary": "Summarise one area code",
+        "description": "Prefixes assigned, the top 10 cities holding them, and how many numbers in the area code appear in FTC complaint records. Cached for 12 hours.",
+        "parameters": [
+          {
+            "name": "npa",
+            "in": "path",
+            "required": true,
+            "description": "Three-digit area code (NPA), first digit 2-9",
+            "schema": { "type": "string", "pattern": "^[2-9][0-9]{2}$" },
+            "example": "628"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Area code summary",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/CacheControl" },
+              "Access-Control-Allow-Origin": { "$ref": "#/components/headers/CORS" }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AreaCodeSummary" },
+                "example": {
+                  "area_code": "628",
+                  "state": "CA",
+                  "timezone": "P",
+                  "prefixes_assigned": 193,
+                  "top_cities": [
+                    { "city": "San Francisco", "prefixes": 116 },
+                    { "city": "San Rafael", "prefixes": 17 }
+                  ],
+                  "complaints": { "reported_numbers": 331, "total": 362, "robocalls": 170 },
+                  "page": "https://www.usacallerlookup.com/area-code-628/",
+                  "attribution": {
+                    "source": "USACallerLookup.com",
+                    "url": "https://www.usacallerlookup.com/area-code-628/",
+                    "docs": "https://www.usacallerlookup.com/api/",
+                    "data": "FTC Do Not Call complaint data (US public domain) + NANPA numbering registry",
+                    "license": "CC0-1.0",
+                    "dataset": "https://github.com/usacallerlookup/ftc-robocall-dataset"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No prefixes assigned under this area code",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" },
+                "example": { "error": "unknown_area_code", "message": "No prefixes assigned under this area code in our copy of the registry." }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "tags": ["Dataset"],
+        "operationId": "getStats",
+        "summary": "Dataset headline figures",
+        "description": "Tracked numbers, complaint records, robocall-flagged records and when the data was last refreshed. Cached for 12 hours.",
+        "responses": {
+          "200": {
+            "description": "Dataset statistics",
+            "headers": {
+              "Cache-Control": { "$ref": "#/components/headers/CacheControl" },
+              "Access-Control-Allow-Origin": { "$ref": "#/components/headers/CORS" }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Stats" },
+                "example": {
+                  "tracked_numbers": 337828,
+                  "complaint_records": 391141,
+                  "robocall_flagged": 268448,
+                  "last_updated": "2026-09-12 14:00:51",
+                  "coverage": "US NANP numbers reported in FTC Do Not Call complaints",
+                  "attribution": {
+                    "source": "USACallerLookup.com",
+                    "url": "https://www.usacallerlookup.com/robocall-statistics/",
+                    "docs": "https://www.usacallerlookup.com/api/",
+                    "data": "FTC Do Not Call complaint data (US public domain) + NANPA numbering registry",
+                    "license": "CC0-1.0",
+                    "dataset": "https://github.com/usacallerlookup/ftc-robocall-dataset"
+                  }
+                }
+              }
+            }
+          },
+          "429": { "$ref": "#/components/responses/RateLimited" }
+        }
+      }
+    }
+  },
+  "components": {
+    "headers": {
+      "CacheControl": {
+        "description": "Public caching hint: 3600 s for numbers, 43200 s for area codes and stats",
+        "schema": { "type": "string" },
+        "example": "public, max-age=3600"
+      },
+      "CORS": {
+        "description": "The API may be called from any origin",
+        "schema": { "type": "string" },
+        "example": "*"
+      }
+    },
+    "responses": {
+      "RateLimited": {
+        "description": "More than 60 requests in a minute from this IP",
+        "headers": {
+          "Retry-After": {
+            "description": "Seconds to wait before retrying",
+            "schema": { "type": "integer" },
+            "example": 60
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/RateLimitError" },
+            "example": {
+              "error": "rate_limited",
+              "message": "Limit is 60 requests per minute. For bulk access download the full dataset instead.",
+              "dataset": "https://github.com/usacallerlookup/ftc-robocall-dataset"
+            }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Attribution": {
+        "type": "object",
+        "description": "Source, licence and links. Linking to the page URL is appreciated but not required (CC0).",
+        "required": ["source", "url", "docs", "data", "license", "dataset"],
+        "properties": {
+          "source": { "type": "string" },
+          "url": { "type": "string", "format": "uri", "description": "Page on usacallerlookup.com for this record" },
+          "docs": { "type": "string", "format": "uri" },
+          "data": { "type": "string" },
+          "license": { "type": "string" },
+          "dataset": { "type": "string", "format": "uri" }
+        }
+      },
+      "Location": {
+        "type": "object",
+        "required": ["city", "state", "carrier"],
+        "properties": {
+          "city": { "type": "string", "description": "Rate-center city from the numbering registry" },
+          "state": { "type": "string", "description": "Two-letter state code" },
+          "carrier": { "type": "string", "description": "Carrier of record for the prefix" }
+        }
+      },
+      "Complaints": {
+        "type": "object",
+        "required": ["total", "robocalls", "first_seen", "last_seen", "states_reporting", "top_subjects"],
+        "properties": {
+          "total": { "type": "integer", "minimum": 0 },
+          "robocalls": { "type": "integer", "minimum": 0, "description": "Complaints flagged as recorded or robocall" },
+          "first_seen": { "type": ["string", "null"], "format": "date" },
+          "last_seen": { "type": ["string", "null"], "format": "date" },
+          "states_reporting": { "type": "integer", "minimum": 0 },
+          "top_subjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["subject", "complaints"],
+              "properties": {
+                "subject": { "type": "string", "description": "FTC complaint subject category" },
+                "complaints": { "type": "integer", "minimum": 0 }
+              }
+            }
+          }
+        }
+      },
+      "NumberProfile": {
+        "type": "object",
+        "required": ["phone", "digits", "toll_free", "location", "complaints", "community_reports", "page", "attribution"],
+        "properties": {
+          "phone": { "type": "string", "description": "Formatted NNN-NNN-NNNN", "examples": ["628-201-7751"] },
+          "digits": { "type": "string", "pattern": "^[2-9][0-9]{2}[2-9][0-9]{6}$" },
+          "toll_free": { "type": "boolean" },
+          "location": {
+            "description": "Null for toll-free numbers and for prefixes not in the registry",
+            "oneOf": [ { "$ref": "#/components/schemas/Location" }, { "type": "null" } ]
+          },
+          "complaints": { "$ref": "#/components/schemas/Complaints" },
+          "community_reports": {
+            "type": "object",
+            "description": "Count of published community reports by report type. Always an object, empty when there are none.",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          },
+          "page": { "type": "string", "format": "uri" },
+          "attribution": { "$ref": "#/components/schemas/Attribution" }
+        }
+      },
+      "AreaCodeSummary": {
+        "type": "object",
+        "required": ["area_code", "state", "timezone", "prefixes_assigned", "top_cities", "complaints", "page", "attribution"],
+        "properties": {
+          "area_code": { "type": "string" },
+          "state": { "type": ["string", "null"] },
+          "timezone": { "type": ["string", "null"], "description": "NANPA time zone code, e.g. E, C, M, P" },
+          "prefixes_assigned": { "type": "integer", "minimum": 0 },
+          "top_cities": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "object",
+              "required": ["city", "prefixes"],
+              "properties": {
+                "city": { "type": "string" },
+                "prefixes": { "type": "integer", "minimum": 0 }
+              }
+            }
+          },
+          "complaints": {
+            "type": "object",
+            "required": ["reported_numbers", "total", "robocalls"],
+            "properties": {
+              "reported_numbers": { "type": "integer", "minimum": 0 },
+              "total": { "type": "integer", "minimum": 0 },
+              "robocalls": { "type": "integer", "minimum": 0 }
+            }
+          },
+          "page": { "type": "string", "format": "uri" },
+          "attribution": { "$ref": "#/components/schemas/Attribution" }
+        }
+      },
+      "Stats": {
+        "type": "object",
+        "required": ["tracked_numbers", "complaint_records", "robocall_flagged", "last_updated", "coverage", "attribution"],
+        "properties": {
+          "tracked_numbers": { "type": "integer", "minimum": 0 },
+          "complaint_records": { "type": "integer", "minimum": 0 },
+          "robocall_flagged": { "type": "integer", "minimum": 0 },
+          "last_updated": { "type": ["string", "null"], "description": "Server time (US Eastern), YYYY-MM-DD HH:MM:SS" },
+          "coverage": { "type": "string" },
+          "attribution": { "$ref": "#/components/schemas/Attribution" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": { "type": "string", "enum": ["invalid_number", "unknown_area_code"] },
+          "message": { "type": "string" }
+        }
+      },
+      "RateLimitError": {
+        "type": "object",
+        "required": ["error", "message", "dataset"],
+        "properties": {
+          "error": { "type": "string", "const": "rate_limited" },
+          "message": { "type": "string" },
+          "dataset": { "type": "string", "format": "uri" }
+        }
+      },
+      "RouteError": {
+        "type": "object",
+        "properties": {
+          "code": { "type": "string", "examples": ["rest_no_route"] },
+          "message": { "type": "string" },
+          "data": { "type": "object", "properties": { "status": { "type": "integer" } } }
+        }
+      }
+    }
+  }
+}

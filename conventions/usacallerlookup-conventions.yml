@@ -1,0 +1,40 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json, llms/usacallerlookup-llms.txt
+summary: >-
+  Cross-cutting runtime semantics for a small, read-only, unauthenticated REST API. Three
+  GET endpoints, no write surface, no auth, no pagination. Runtime concerns are limited to
+  caching and rate limiting.
+auth:
+  style: none
+  detail: Public API, no credentials (see authentication/).
+versioning:
+  style: uri-path
+  current: v1
+  detail: Version pinned in the base path /wp-json/ucl/v1; info.version 1.0.0.
+pagination:
+  style: none
+  detail: All responses are single objects; no collection endpoints or cursors.
+error_envelope:
+  format: custom-json
+  detail: '{ error, message } and WordPress { code, message, data } — not RFC 9457. See errors/.'
+rate_limit_signaling:
+  headers: [Retry-After, RateLimit]
+  status: 429
+  detail: 60 req/min per IP; see rate-limits/.
+caching:
+  headers: [Cache-Control]
+  detail: Responses carry Cache-Control; provider explicitly asks consumers to cache client-side.
+request_id_tracing:
+  supported: false
+idempotency:
+  coverage: na
+  detail: >-
+    Read-only API — all operations are HTTP GET, which are safe and idempotent by definition.
+    There is no mutating surface, so an Idempotency-Key mechanism is not applicable.
+reversibility:
+  coverage: na
+  detail: No write surface exists; nothing to reverse.
+dry_run_mode:
+  coverage: na
+  detail: No write surface exists; a dry-run mode is not applicable.

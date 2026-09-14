@@ -1,0 +1,24 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json, llms/usacallerlookup-llms.txt
+summary: >-
+  Versioning is pinned in the URI path (/wp-json/ucl/v1); contract info.version is 1.0.0.
+  No deprecation policy, Sunset/Deprecation header usage, SLA, or public status page was
+  found on the provider's surface. Data freshness is stated instead: FTC complaint data is
+  ingested every weekday and the dataset refreshed daily/monthly.
+versioning:
+  scheme: uri-path
+  current: v1
+  spec_version: 1.0.0
+deprecation:
+  policy: none-found
+  headers_observed: []
+status_page:
+  present: false
+  note: No status.* or hosted status page located; docs host returns a bot challenge to non-browser clients.
+sla:
+  present: false
+data_freshness:
+  ftc_complaints: ingested every weekday
+  dataset: refreshed daily on the site; bulk dataset repo refreshed monthly
+deprecated_operations: []

@@ -1,13 +1,26 @@
 name: USACallerLookup
-description: >-
-  A free, read-only JSON REST API over US phone-numbering data and FTC robocall complaint records. No API key or signup
-  required; access is throttled at 60 requests/minute per IP. Data is sourced from FTC Do Not Call complaints and the
+description: A free, read-only JSON REST API over US phone-numbering data and FTC robocall complaint records. No API key or
+  signup required; access is throttled at 60 requests/minute per IP. Data is sourced from FTC Do Not Call complaints and the
   NANPA registry and dedicated to the public domain under CC0.
 url: https://raw.githubusercontent.com/api-evangelist/usacallerlookup/refs/heads/main/apis.yml
 created: '2026-09-14'
 modified: '2026-09-14'
 specificationVersion: '0.21'
 tags:
+- phone lookup
+- caller ID
+- robocall
+- FTC
+- telecom
+- open data
+- anti-fraud
+apis:
+- name: USACallerLookup Free Phone Lookup API
+  description: 'No-auth, read-only REST API with three GET endpoints: reverse phone number lookup, area-code aggregates, and
+    dataset stats. Backed by a public OpenAPI 3.1.0 contract.'
+  humanURL: https://www.usacallerlookup.com/api/
+  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
+  tags:
   - phone lookup
   - caller ID
   - robocall
@@ -15,33 +28,73 @@ tags:
   - telecom
   - open data
   - anti-fraud
-apis:
-  - name: USACallerLookup Free Phone Lookup API
-    description: >-
-      No-auth, read-only REST API with three GET endpoints: reverse phone number lookup, area-code aggregates, and
-      dataset stats. Backed by a public OpenAPI 3.1.0 contract.
-    humanURL: https://www.usacallerlookup.com/api/
-    baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
-    tags:
-      - phone lookup
-      - caller ID
-      - robocall
-      - FTC
-      - telecom
-      - open data
-      - anti-fraud
-    properties:
-      - type: OpenAPI
-        url: https://www.usacallerlookup.com/wp-content/uploads/api/openapi.json
-      - type: Documentation
-        url: https://www.usacallerlookup.com/api/
-      - type: LLMsTxt
-        url: https://www.usacallerlookup.com/llms.txt
+  properties:
+  - type: OpenAPI
+    url: https://www.usacallerlookup.com/wp-content/uploads/api/openapi.json
+  - type: Documentation
+    url: https://www.usacallerlookup.com/api/
+  - type: LLMsTxt
+    url: https://www.usacallerlookup.com/llms.txt
+  image: https://www.usacallerlookup.com/favicon.ico
 maintainers:
-  - FN: USACallerLookup
-    url: https://www.usacallerlookup.com/
-generated:
+- FN: USACallerLookup
+  url: https://www.usacallerlookup.com/
+  email: contact@usacallerlookup.com
+common:
+- type: Website
+  url: https://www.usacallerlookup.com/
+- type: OpenAPI
+  url: openapi/usacallerlookup-openapi.json
+- type: LLMsTxt
+  url: llms/usacallerlookup-llms.txt
+- type: Packages
+  url: packages/usacallerlookup-packages.yml
+- type: SDKs
+  url: packages/usacallerlookup-packages.yml
+- type: Authentication
+  url: authentication/usacallerlookup-authentication.yml
+- type: RateLimits
+  url: rate-limits/usacallerlookup-rate-limits.yml
+- type: Plans
+  url: plans/usacallerlookup-plans-pricing.yml
+- type: ErrorCatalog
+  url: errors/usacallerlookup-problem-types.yml
+- type: Conventions
+  url: conventions/usacallerlookup-conventions.yml
+- type: DataModel
+  url: data-model/usacallerlookup-data-model.yml
+- type: Conformance
+  url: conformance/usacallerlookup-conformance.yml
+- type: Lifecycle
+  url: lifecycle/usacallerlookup-lifecycle.yml
+- type: DomainSecurity
+  url: security/usacallerlookup-domain-security.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Overlay
+  url: overlays/usacallerlookup-openapi-overlay.yaml
+- type: Documentation
+  url: https://www.usacallerlookup.com/api/
+- type: APIReference
+  url: https://www.usacallerlookup.com/api/
+- type: TermsOfService
+  url: https://www.usacallerlookup.com/terms-conditions/
+- type: Blog
+  url: https://www.usacallerlookup.com/blog/
+- type: Support
+  url: https://www.usacallerlookup.com/contact-us/
+- type: HelpCenter
+  url: https://www.usacallerlookup.com/faq/
+- type: GitHubOrganization
+  url: https://github.com/usacallerlookup
+x-enrichment:
+  date: '2026-09-14'
+  status: enriched
+  artifacts_added: 16
+  pass: local-v3
+x-generated:
   by: apis.io/add
   model: claude-opus-4-8
   confidence: 95
   at: '2026-09-14T18:32:05.841Z'
+image: https://www.usacallerlookup.com/favicon.ico

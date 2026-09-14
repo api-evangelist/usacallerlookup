@@ -1,0 +1,36 @@
+generated: '2026-09-14'
+method: derived
+source: openapi/usacallerlookup-openapi.json, llms/usacallerlookup-llms.txt
+summary: >-
+  Cross-cutting standards posture for a small read-only REST API. Reward-only: entries the
+  contract does not support are recorded as conforms:false with honest evidence, not penalised.
+conformance:
+  - id: oauth2
+    conforms: false
+    evidence: No securitySchemes in the OpenAPI; API is unauthenticated.
+  - id: rfc9457
+    conforms: false
+    evidence: Errors use custom JSON ({error,message}) and WordPress REST shapes, not application/problem+json.
+  - id: rfc9110-safe-idempotent
+    conforms: true
+    evidence: All three operations are HTTP GET (safe + idempotent by definition).
+  - id: ietf-ratelimit-headers
+    conforms: partial
+    evidence: >-
+      429 responses send Retry-After (RFC 9110); a RateLimit header is referenced. Draft
+      IETF RateLimit fields are not fully declared per-response in the contract.
+  - id: json:api
+    conforms: false
+    evidence: Plain JSON object responses, not a json:api document structure.
+  - id: pagination
+    conforms: false
+    evidence: No collection endpoints; nothing to paginate.
+domain_standards:
+  - id: nanp
+    name: North American Numbering Plan (NPA-NXX)
+    conforms: true
+    evidence: >-
+      Inputs and outputs are keyed on NANP structure — 10-digit numbers, NPA area codes,
+      NPA-NXX prefixes with carrier/rate-centre attributes — per info.description and the
+      /number/{phone} and /area-code/{npa} operations.
+    reward_only: true

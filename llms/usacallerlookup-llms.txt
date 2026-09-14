@@ -1,0 +1,63 @@
+# USACallerLookup
+
+> Free reverse phone lookup for US numbers. Every number page combines NANPA carrier and
+> rate-centre data with Federal Trade Commission Do Not Call complaint records and reports left
+> by visitors, so a caller can be identified by what is actually on record rather than by guesswork.
+
+US phone numbering is public information and FTC complaint data is US public domain. This site
+structures both so a specific question about a specific number has a specific answer.
+
+## Data sources
+
+- **NANPA / North American Numbering Plan**: 197,876 NPA-NXX prefixes across 364 area codes,
+  giving carrier, line type, rate centre, city and state for any US number.
+- **FTC Do Not Call complaint data**: published every weekday by the Federal Trade Commission and
+  released into the US public domain. Ingested daily. Provides complaint counts, the states
+  complainants filed from, reported subject categories and robocall flags.
+- **Visitor reports**: free-text reports submitted on the site, moderated before display.
+
+## How to read what is here
+
+- Complaint counts describe **records filed against a number**, not proven wrongdoing.
+- Caller ID is trivially forged. A number appearing in complaints may belong to an uninvolved
+  person whose number was spoofed by someone else. Language on the site reflects this and so
+  should any summary of it.
+- Figures are stated with the date range they cover, because complaint volumes move quickly.
+- Numbers with no prefix data, no complaints and no visitor reports are intentionally excluded
+  from the index rather than published as empty pages.
+
+## Key pages
+
+- [Homepage and lookup](https://www.usacallerlookup.com/): search any US number
+- [Area code directory](https://www.usacallerlookup.com/state-area-codes/): every US area code by state
+- [Data sources](https://www.usacallerlookup.com/data-sources/): full provenance and update cadence
+- [FAQ](https://www.usacallerlookup.com/faq/): how the data works and what it can and cannot tell you
+- [Remove my number](https://www.usacallerlookup.com/remove-my-number/): removal request process
+- [Blog](https://www.usacallerlookup.com/blog/): analysis of scam patterns drawn from the complaint data
+
+## Citation
+
+Attribute as USACallerLookup and link to the specific page used. When quoting a complaint figure,
+include the date range shown on that page, since the underlying dataset updates daily.
+
+## Free API
+
+A free, read-only JSON API with no key and no sign-up: carrier, location and FTC complaint
+history per US number, area code summaries and dataset stats. 60 requests per minute per IP.
+
+- [API documentation](https://www.usacallerlookup.com/api/)
+- [OpenAPI 3.1 specification](https://www.usacallerlookup.com/wp-content/uploads/api/openapi.json)
+- Base URL: https://www.usacallerlookup.com/wp-json/ucl/v1 (endpoints: /number/{phone}, /area-code/{npa}, /stats)
+- Clients: `npm install usacallerlookup`, `pip install usacallerlookup`
+- Bulk data: https://github.com/usacallerlookup/ftc-robocall-dataset (CC0)
+
+## Crawler policy
+
+Crawlers that fetch pages in order to cite them are welcome, including OAI-SearchBot,
+ChatGPT-User, PerplexityBot, Claude-User, Claude-SearchBot, Applebot and Googlebot. Crawlers that
+collect content for model training are declined at the server, as are SEO intelligence and bulk
+scraping tools. This distinction is deliberate: citation is welcome, silent bulk collection is not.
+
+## Contact
+
+https://www.usacallerlookup.com/contact-us/
