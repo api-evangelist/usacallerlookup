@@ -1,0 +1,47 @@
+name: USACallerLookup
+description: >-
+  A free, read-only JSON REST API over US phone-numbering data and FTC robocall complaint records. No API key or signup
+  required; access is throttled at 60 requests/minute per IP. Data is sourced from FTC Do Not Call complaints and the
+  NANPA registry and dedicated to the public domain under CC0.
+url: https://raw.githubusercontent.com/api-evangelist/usacallerlookup/refs/heads/main/apis.yml
+created: '2026-09-14'
+modified: '2026-09-14'
+specificationVersion: '0.21'
+tags:
+  - phone lookup
+  - caller ID
+  - robocall
+  - FTC
+  - telecom
+  - open data
+  - anti-fraud
+apis:
+  - name: USACallerLookup Free Phone Lookup API
+    description: >-
+      No-auth, read-only REST API with three GET endpoints: reverse phone number lookup, area-code aggregates, and
+      dataset stats. Backed by a public OpenAPI 3.1.0 contract.
+    humanURL: https://www.usacallerlookup.com/api/
+    baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
+    tags:
+      - phone lookup
+      - caller ID
+      - robocall
+      - FTC
+      - telecom
+      - open data
+      - anti-fraud
+    properties:
+      - type: OpenAPI
+        url: https://www.usacallerlookup.com/wp-content/uploads/api/openapi.json
+      - type: Documentation
+        url: https://www.usacallerlookup.com/api/
+      - type: LLMsTxt
+        url: https://www.usacallerlookup.com/llms.txt
+maintainers:
+  - FN: USACallerLookup
+    url: https://www.usacallerlookup.com/
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 95
+  at: '2026-09-14T18:32:05.841Z'
