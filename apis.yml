@@ -1,12 +1,20 @@
 name: USACallerLookup
-description: A free, read-only JSON REST API over US phone-numbering data and FTC robocall complaint records. No API key or
-  signup required; access is throttled at 60 requests/minute per IP. Data is sourced from FTC Do Not Call complaints and the
-  NANPA registry and dedicated to the public domain under CC0.
+description: A free, read-only JSON REST API over US phone-numbering data and FTC robocall complaint records.
+  No API key or signup required; access is throttled at 60 requests/minute per IP. Data is sourced from
+  FTC Do Not Call complaints and the NANPA registry and dedicated to the public domain under CC0.
 url: https://raw.githubusercontent.com/api-evangelist/usacallerlookup/refs/heads/main/apis.yml
 created: '2026-09-14'
-modified: '2026-09-14'
+modified: '2026-09-16'
 specificationVersion: '0.21'
 tags:
+- Phone Lookup
+- Caller ID
+- robocall
+- FTC
+- Telecom
+- Open Data
+- Anti-Fraud
+tags_raw:
 - phone lookup
 - caller ID
 - robocall
@@ -15,27 +23,48 @@ tags:
 - open data
 - anti-fraud
 apis:
-- name: USACallerLookup Free Phone Lookup API
-  description: 'No-auth, read-only REST API with three GET endpoints: reverse phone number lookup, area-code aggregates, and
-    dataset stats. Backed by a public OpenAPI 3.1.0 contract.'
+- aid: usacallerlookup:usacallerlookup-area-codes-api
+  name: USACallerLookup Area codes API
+  description: Aggregate figures for one area code
   humanURL: https://www.usacallerlookup.com/api/
   baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
   tags:
-  - phone lookup
-  - caller ID
-  - robocall
-  - FTC
-  - telecom
-  - open data
-  - anti-fraud
+  - Area codes
   properties:
   - type: OpenAPI
-    url: https://www.usacallerlookup.com/wp-content/uploads/api/openapi.json
+    url: openapi/usacallerlookup-area-codes-api-openapi.yml
   - type: Documentation
     url: https://www.usacallerlookup.com/api/
   - type: LLMsTxt
     url: https://www.usacallerlookup.com/llms.txt
-  image: https://www.usacallerlookup.com/favicon.ico
+- aid: usacallerlookup:usacallerlookup-dataset-api
+  name: USACallerLookup Dataset API
+  description: Headline figures for the whole dataset
+  humanURL: https://www.usacallerlookup.com/api/
+  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
+  tags:
+  - Dataset
+  properties:
+  - type: OpenAPI
+    url: openapi/usacallerlookup-dataset-api-openapi.yml
+  - type: Documentation
+    url: https://www.usacallerlookup.com/api/
+  - type: LLMsTxt
+    url: https://www.usacallerlookup.com/llms.txt
+- aid: usacallerlookup:usacallerlookup-numbers-api
+  name: USACallerLookup Numbers API
+  description: Per-number carrier, location and complaint profile
+  humanURL: https://www.usacallerlookup.com/api/
+  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
+  tags:
+  - Numbers
+  properties:
+  - type: OpenAPI
+    url: openapi/usacallerlookup-numbers-api-openapi.yml
+  - type: Documentation
+    url: https://www.usacallerlookup.com/api/
+  - type: LLMsTxt
+    url: https://www.usacallerlookup.com/llms.txt
 maintainers:
 - FN: USACallerLookup
   url: https://www.usacallerlookup.com/
@@ -44,7 +73,7 @@ common:
 - type: Website
   url: https://www.usacallerlookup.com/
 - type: OpenAPI
-  url: openapi/usacallerlookup-openapi.json
+  url: openapi/_original/usacallerlookup-openapi.json
 - type: LLMsTxt
   url: llms/usacallerlookup-llms.txt
 - type: Packages
