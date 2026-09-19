@@ -43,6 +43,8 @@ apis:
   humanURL: https://www.usacallerlookup.com/api/
   baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
   tags:
+  - Datasets
+  tags_raw:
   - Dataset
   properties:
   - type: OpenAPI
