@@ -1,0 +1,231 @@
+openapi: 3.2.0
+info:
+  title: USACallerLookup Free Phone Lookup Area codes API
+  version: 1.0.0
+  summary: 'Free, no-key JSON API for US phone numbers: carrier, location and FTC robocall complaint history.'
+  description: A free, read-only JSON API over US phone numbering data and FTC Do Not Call complaint records.
+  termsOfService: https://www.usacallerlookup.com/terms-conditions/
+  contact:
+    name: USACallerLookup
+    url: https://www.usacallerlookup.com/api/
+    email: contact@usacallerlookup.com
+  license:
+    name: CC0 1.0 Universal (data)
+    identifier: CC0-1.0
+servers:
+- url: https://www.usacallerlookup.com/wp-json/ucl/v1
+  description: Production
+tags:
+- name: Area codes
+  description: Aggregate figures for one area code
+paths:
+  /area-code/{npa}:
+    get:
+      tags:
+      - Area codes
+      operationId: getAreaCode
+      summary: Summarise one area code
+      description: Prefixes assigned, the top 10 cities holding them, and how many numbers in the area code appear in FTC complaint records. Cached for 12 hours.
+      parameters:
+      - name: npa
+        in: path
+        required: true
+        description: Three-digit area code (NPA), first digit 2-9
+        schema:
+          type: string
+          pattern: ^[2-9][0-9]{2}$
+        example: '628'
+      responses:
+        '200':
+          description: Area code summary
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/CORS'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AreaCodeSummary'
+              example:
+                area_code: '628'
+                state: CA
+                timezone: P
+                prefixes_assigned: 193
+                top_cities:
+                - city: San Francisco
+                  prefixes: 116
+                - city: San Rafael
+                  prefixes: 17
+                complaints:
+                  reported_numbers: 331
+                  total: 362
+                  robocalls: 170
+                page: https://www.usacallerlookup.com/area-code-628/
+                attribution:
+                  source: USACallerLookup.com
+                  url: https://www.usacallerlookup.com/area-code-628/
+                  docs: https://www.usacallerlookup.com/api/
+                  data: FTC Do Not Call complaint data (US public domain) + NANPA numbering registry
+                  license: CC0-1.0
+                  dataset: https://github.com/usacallerlookup/ftc-robocall-dataset
+        '404':
+          description: No prefixes assigned under this area code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: unknown_area_code
+                message: No prefixes assigned under this area code in our copy of the registry.
+        '429':
+          $ref: '#/components/responses/RateLimited'
+components:
+  schemas:
+    AreaCodeSummary:
+      type: object
+      required:
+      - area_code
+      - state
+      - timezone
+      - prefixes_assigned
+      - top_cities
+      - complaints
+      - page
+      - attribution
+      properties:
+        area_code:
+          type: string
+        state:
+          type:
+          - string
+          - 'null'
+        timezone:
+          type:
+          - string
+          - 'null'
+          description: NANPA time zone code, e.g. E, C, M, P
+        prefixes_assigned:
+          type: integer
+          minimum: 0
+        top_cities:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            required:
+            - city
+            - prefixes
+            properties:
+              city:
+                type: string
+              prefixes:
+                type: integer
+                minimum: 0
+        complaints:
+          type: object
+          required:
+          - reported_numbers
+          - total
+          - robocalls
+          properties:
+            reported_numbers:
+              type: integer
+              minimum: 0
+            total:
+              type: integer
+              minimum: 0
+            robocalls:
+              type: integer
+              minimum: 0
+        page:
+          type: string
+          format: uri
+        attribution:
+          $ref: '#/components/schemas/Attribution'
+    RateLimitError:
+      type: object
+      required:
+      - error
+      - message
+      - dataset
+      properties:
+        error:
+          type: string
+          const: rate_limited
+        message:
+          type: string
+        dataset:
+          type: string
+          format: uri
+    Error:
+      type: object
+      required:
+      - error
+      - message
+      properties:
+        error:
+          type: string
+          enum:
+          - invalid_number
+          - unknown_area_code
+        message:
+          type: string
+    Attribution:
+      type: object
+      description: Source, licence and links. Linking to the page URL is appreciated but not required (CC0).
+      required:
+      - source
+      - url
+      - docs
+      - data
+      - license
+      - dataset
+      properties:
+        source:
+          type: string
+        url:
+          type: string
+          format: uri
+          description: Page on usacallerlookup.com for this record
+        docs:
+          type: string
+          format: uri
+        data:
+          type: string
+        license:
+          type: string
+        dataset:
+          type: string
+          format: uri
+  headers:
+    CORS:
+      description: The API may be called from any origin
+      schema:
+        type: string
+      example: '*'
+    CacheControl:
+      description: 'Public caching hint: 3600 s for numbers, 43200 s for area codes and stats'
+      schema:
+        type: string
+      example: public, max-age=3600
+  responses:
+    RateLimited:
+      description: More than 60 requests in a minute from this IP
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+          example: 60
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RateLimitError'
+          example:
+            error: rate_limited
+            message: Limit is 60 requests per minute. For bulk access download the full dataset instead.
+            dataset: https://github.com/usacallerlookup/ftc-robocall-dataset
+externalDocs:
+  description: Human-readable API documentation, client libraries and dataset downloads
+  url: https://www.usacallerlookup.com/api/

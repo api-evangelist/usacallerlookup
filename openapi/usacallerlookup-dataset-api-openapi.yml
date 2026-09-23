@@ -1,0 +1,158 @@
+openapi: 3.2.0
+info:
+  title: USACallerLookup Free Phone Lookup Dataset API
+  version: 1.0.0
+  summary: 'Free, no-key JSON API for US phone numbers: carrier, location and FTC robocall complaint history.'
+  description: A free, read-only JSON API over US phone numbering data and FTC Do Not Call complaint records.
+  termsOfService: https://www.usacallerlookup.com/terms-conditions/
+  contact:
+    name: USACallerLookup
+    url: https://www.usacallerlookup.com/api/
+    email: contact@usacallerlookup.com
+  license:
+    name: CC0 1.0 Universal (data)
+    identifier: CC0-1.0
+servers:
+- url: https://www.usacallerlookup.com/wp-json/ucl/v1
+  description: Production
+tags:
+- name: Dataset
+  description: Headline figures for the whole dataset
+paths:
+  /stats:
+    get:
+      tags:
+      - Dataset
+      operationId: getStats
+      summary: Dataset headline figures
+      description: Tracked numbers, complaint records, robocall-flagged records and when the data was last refreshed. Cached for 12 hours.
+      responses:
+        '200':
+          description: Dataset statistics
+          headers:
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+            Access-Control-Allow-Origin:
+              $ref: '#/components/headers/CORS'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+              example:
+                tracked_numbers: 337828
+                complaint_records: 391141
+                robocall_flagged: 268448
+                last_updated: '2026-09-12 14:00:51'
+                coverage: US NANP numbers reported in FTC Do Not Call complaints
+                attribution:
+                  source: USACallerLookup.com
+                  url: https://www.usacallerlookup.com/robocall-statistics/
+                  docs: https://www.usacallerlookup.com/api/
+                  data: FTC Do Not Call complaint data (US public domain) + NANPA numbering registry
+                  license: CC0-1.0
+                  dataset: https://github.com/usacallerlookup/ftc-robocall-dataset
+        '429':
+          $ref: '#/components/responses/RateLimited'
+components:
+  schemas:
+    Stats:
+      type: object
+      required:
+      - tracked_numbers
+      - complaint_records
+      - robocall_flagged
+      - last_updated
+      - coverage
+      - attribution
+      properties:
+        tracked_numbers:
+          type: integer
+          minimum: 0
+        complaint_records:
+          type: integer
+          minimum: 0
+        robocall_flagged:
+          type: integer
+          minimum: 0
+        last_updated:
+          type:
+          - string
+          - 'null'
+          description: Server time (US Eastern), YYYY-MM-DD HH:MM:SS
+        coverage:
+          type: string
+        attribution:
+          $ref: '#/components/schemas/Attribution'
+    RateLimitError:
+      type: object
+      required:
+      - error
+      - message
+      - dataset
+      properties:
+        error:
+          type: string
+          const: rate_limited
+        message:
+          type: string
+        dataset:
+          type: string
+          format: uri
+    Attribution:
+      type: object
+      description: Source, licence and links. Linking to the page URL is appreciated but not required (CC0).
+      required:
+      - source
+      - url
+      - docs
+      - data
+      - license
+      - dataset
+      properties:
+        source:
+          type: string
+        url:
+          type: string
+          format: uri
+          description: Page on usacallerlookup.com for this record
+        docs:
+          type: string
+          format: uri
+        data:
+          type: string
+        license:
+          type: string
+        dataset:
+          type: string
+          format: uri
+  headers:
+    CORS:
+      description: The API may be called from any origin
+      schema:
+        type: string
+      example: '*'
+    CacheControl:
+      description: 'Public caching hint: 3600 s for numbers, 43200 s for area codes and stats'
+      schema:
+        type: string
+      example: public, max-age=3600
+  responses:
+    RateLimited:
+      description: More than 60 requests in a minute from this IP
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying
+          schema:
+            type: integer
+          example: 60
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RateLimitError'
+          example:
+            error: rate_limited
+            message: Limit is 60 requests per minute. For bulk access download the full dataset instead.
+            dataset: https://github.com/usacallerlookup/ftc-robocall-dataset
+externalDocs:
+  description: Human-readable API documentation, client libraries and dataset downloads
+  url: https://www.usacallerlookup.com/api/
