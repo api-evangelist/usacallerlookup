@@ -11,9 +11,9 @@ tags:
 - Caller ID
 - robocall
 - FTC
-- Telecom
+- Telecommunications
 - Open Data
-- Anti-Fraud
+- Fraud Prevention
 tags_raw:
 - phone lookup
 - caller ID
@@ -22,51 +22,23 @@ tags_raw:
 - telecom
 - open data
 - anti-fraud
+- Telecom
+- Anti-Fraud
 apis:
-- aid: usacallerlookup:usacallerlookup-area-codes-api
-  name: USACallerLookup Area codes API
-  description: Aggregate figures for one area code
-  humanURL: https://www.usacallerlookup.com/api/
-  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
+- aid: usacallerlookup:usacallerlookup-com-website-wordpress-rest
+  name: USACallerLookup Website (WordPress REST)
+  description: 'The public WordPress REST API (wp-json) of the USACallerLookup website at www.usacallerlookup.com:
+    the route index of the site''s content management system, catalogued as one site surface rather than
+    as separate APIs.'
+  baseURL: https://www.usacallerlookup.com/wp-json
   tags:
-  - Area codes
+  - WordPress
+  x-surface: platform-generated
   properties:
-  - type: OpenAPI
-    url: openapi/usacallerlookup-area-codes-api-openapi.yml
   - type: Documentation
-    url: https://www.usacallerlookup.com/api/
-  - type: LLMsTxt
-    url: https://www.usacallerlookup.com/llms.txt
-- aid: usacallerlookup:usacallerlookup-dataset-api
-  name: USACallerLookup Dataset API
-  description: Headline figures for the whole dataset
-  humanURL: https://www.usacallerlookup.com/api/
-  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
-  tags:
-  - Datasets
-  tags_raw:
-  - Dataset
-  properties:
-  - type: OpenAPI
-    url: openapi/usacallerlookup-dataset-api-openapi.yml
-  - type: Documentation
-    url: https://www.usacallerlookup.com/api/
-  - type: LLMsTxt
-    url: https://www.usacallerlookup.com/llms.txt
-- aid: usacallerlookup:usacallerlookup-numbers-api
-  name: USACallerLookup Numbers API
-  description: Per-number carrier, location and complaint profile
-  humanURL: https://www.usacallerlookup.com/api/
-  baseURL: https://www.usacallerlookup.com/wp-json/ucl/v1
-  tags:
-  - Numbers
-  properties:
-  - type: OpenAPI
-    url: openapi/usacallerlookup-numbers-api-openapi.yml
-  - type: Documentation
-    url: https://www.usacallerlookup.com/api/
-  - type: LLMsTxt
-    url: https://www.usacallerlookup.com/llms.txt
+    url: https://www.usacallerlookup.com/wp-json
+  x-platform: wordpress
+  x-platform-surface: rest
 maintainers:
 - FN: USACallerLookup
   url: https://www.usacallerlookup.com/
@@ -118,6 +90,8 @@ common:
   url: https://www.usacallerlookup.com/faq/
 - type: GitHubOrganization
   url: https://github.com/usacallerlookup
+- type: LLMsTxt
+  url: https://www.usacallerlookup.com/llms.txt
 x-enrichment:
   date: '2026-09-14'
   status: enriched
